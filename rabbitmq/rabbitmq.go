@@ -20,16 +20,38 @@ type Exchange struct {
 }
 
 // NewExchange declares a RabbitMQ Exchange
-func (ch Channel) NewExchange(exchange Exchange) error {
+func (ch Channel) NewExchange(name string) error {
 	return ch.ExchangeDeclare(
-		exchange.Name,
-		exchange.ExchangeType,
-		exchange.Durable,
-		exchange.AutoDeleted,
-		exchange.Internal,
-		exchange.NoWait,
+		name,
+		"fanout", // type
+		true,     // durable
+		false,    // auto-deleted
+		false,    // internal
+		false,    // no-wait
 		nil,
 	)
+}
+
+// NewQueue declares a Rabbitmq Queue
+func (ch Channel) NewQueue(name string) (amqp.Queue, error) {
+	return ch.QueueDeclare(
+		name,  // name
+		false, // durable
+		false, // delete when unused
+		true,  // exclusive
+		false, // no-wait
+		nil,   // arguments
+	)
+}
+
+// BindQueue bind the Queue with the Exchange
+func (ch Channel) BindQueue(name string, exchangeName string) error {
+	return ch.QueueBind(
+		name,         // queue name
+		"",           // routing key
+		exchangeName, // exchange
+		false,
+		nil)
 }
 
 // Send adds a new Message in the Exchange

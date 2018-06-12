@@ -5,16 +5,10 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"os"
-	"time"
 
 	"github.com/filipovi/event-populate/config"
 	"github.com/filipovi/event-populate/elastic"
 	"github.com/filipovi/event-populate/rabbitmq"
-	"github.com/phyber/negroni-gzip/gzip"
-	"github.com/rs/cors"
-	"github.com/urfave/negroni"
-	goji "goji.io"
 	"goji.io/pat"
 )
 
@@ -92,31 +86,34 @@ func main() {
 	env, err := connect(cfg)
 	failOnError(err, "Failed to connect to ES")
 
-	n := negroni.Classic()
+	err = env.channel.NewExchange("event_message.mailchimp")
+	failOnError(err, "Failed to create an apmq exchange")
 
-	// Routing
-	mux := goji.NewMux()
-	mux.HandleFunc(pat.Get("/search/:term"), env.handleSearchRequest)
-	mux.HandleFunc(pat.Get("/"), env.handleHomeRequest)
+	q, err := env.channel.NewQueue("")
+	failOnError(err, "Failed to declare a queue")
 
-	n.UseHandler(mux)
+	err = env.channel.BindQueue(q.Name, "event_message.mailchimp")
+	failOnError(err, "Failed to bind a queue")
 
-	// Middlewares
-	c := cors.New(cors.Options{
-		AllowedOrigins: []string{"http://0.0.0.0"},
-	})
-	n.Use(c)
-	n.Use(gzip.Gzip(gzip.DefaultCompression))
+	msgs, err := env.channel.Consume(
+		q.Name, // queue
+		"",     // consumer
+		true,   // auto-ack
+		false,  // exclusive
+		false,  // no-local
+		false,  // no-wait
+		nil,    // args
+	)
+	failOnError(err, "Failed to register a consumer")
 
-	// Launch the Web Server
-	addr := fmt.Sprintf("0.0.0.0:%s", os.Getenv("PORT"))
-	srv := &http.Server{
-		Handler:      n,
-		Addr:         addr,
-		WriteTimeout: 15 * time.Second,
-		ReadTimeout:  15 * time.Second,
-	}
+	forever := make(chan bool)
 
-	fmt.Println("Server run on http://" + addr)
-	log.Fatal(srv.ListenAndServe())
+	go func() {
+		for d := range msgs {
+			log.Printf(" [x] %s", d.Body)
+		}
+	}()
+
+	log.Printf(" [*] Waiting for logs. To exit press CTRL+C")
+	<-forever
 }
