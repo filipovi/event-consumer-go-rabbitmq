@@ -1,6 +1,6 @@
 {
   "name": "event-populate",
-  "description": "Populate ES from Event",
+  "description": "Populate ES with EventMessage",
   "image": "heroku/go:1.10",
   "mount_dir": "src/github.com/filipovi/event-populate",
   "website": "https://github.com/filipovi/event-populate",

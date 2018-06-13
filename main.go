@@ -6,9 +6,10 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/filipovi/event-populate/config"
-	"github.com/filipovi/event-populate/elastic"
-	"github.com/filipovi/event-populate/rabbitmq"
+	"path/filepath"
+
+	"github.com/filipovi/elastic"
+	"github.com/filipovi/rabbitmq"
 	"goji.io/pat"
 )
 
@@ -58,14 +59,19 @@ func failOnError(err error, msg string) {
 	panic(fmt.Sprintf("%s: %s", msg, err))
 }
 
-func connect(cfg config.Config) (*Env, error) {
-	elastic, err := elastic.New(cfg.Elastic.URL)
+func connect(file string) (*Env, error) {
+	path, err := filepath.Abs(file)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	elastic, err := elastic.New(path)
 	if nil != err {
 		return nil, err
 	}
 	log.Println("Elastic connected!")
 
-	rabbitmq, err := rabbitmq.New(cfg.Rabbitmq.URL)
+	rabbitmq, err := rabbitmq.New(path)
 	if nil != err {
 		return nil, err
 	}
@@ -80,10 +86,7 @@ func connect(cfg config.Config) (*Env, error) {
 }
 
 func main() {
-	cfg, err := config.New("config.json")
-	failOnError(err, "Failed to read config.json")
-
-	env, err := connect(cfg)
+	env, err := connect("config.json")
 	failOnError(err, "Failed to connect to ES")
 
 	err = env.channel.NewExchange("event_message.mailchimp")

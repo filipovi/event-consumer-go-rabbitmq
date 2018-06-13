@@ -1,6 +1,6 @@
 {
     "elastic": {
-        "url": "http://localhost:9200"
+        "url": "http://HOST:PORT"
     },
     "rabbitmq": {
         "url": "amqp://APMQ_LOGIN:APMQ_PASSWORD@APMQ_HOST:APMQ_PORT/"
