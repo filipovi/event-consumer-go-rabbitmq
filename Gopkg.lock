@@ -9,6 +9,24 @@
 
 [[projects]]
   branch = "master"
+  name = "github.com/filipovi/elastic"
+  packages = [
+    ".",
+    "config"
+  ]
+  revision = "3afae6824cf6a1924e5f4d185e3fa992c228e92b"
+
+[[projects]]
+  branch = "master"
+  name = "github.com/filipovi/rabbitmq"
+  packages = [
+    ".",
+    "config"
+  ]
+  revision = "8f422adb051f23af75caa42cedf893cb4f1dbe27"
+
+[[projects]]
+  branch = "master"
   name = "github.com/icrowley/fake"
   packages = ["."]
   revision = "4178557ae428460c3780a381c824a1f3aceb6325"
@@ -35,22 +53,10 @@
   version = "v6.1.23"
 
 [[projects]]
-  branch = "master"
-  name = "github.com/phyber/negroni-gzip"
-  packages = ["gzip"]
-  revision = "ef6356a5d02936b65ca8e60b604ed6b078aac8d3"
-
-[[projects]]
   name = "github.com/pkg/errors"
   packages = ["."]
   revision = "645ef00459ed84a119197bfb8d8205042c6df63d"
   version = "v0.8.0"
-
-[[projects]]
-  name = "github.com/rs/cors"
-  packages = ["."]
-  revision = "ca016a06a5753f8ba03029c0aa5e54afb1bf713f"
-  version = "v1.4.0"
 
 [[projects]]
   branch = "master"
@@ -59,15 +65,8 @@
   revision = "e5adc2ada8b8efff032bf61173a233d143e9318e"
 
 [[projects]]
-  name = "github.com/urfave/negroni"
-  packages = ["."]
-  revision = "5dbbc83f748fc3ad38585842b0aedab546d0ea1e"
-  version = "v0.3.0"
-
-[[projects]]
   name = "goji.io"
   packages = [
-    ".",
     "internal",
     "pat",
     "pattern"
@@ -78,6 +77,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "3cb6c26cc4ef476026ee4f57044e37d39369bba8a00c93fa6bdea214edcf4cec"
+  inputs-digest = "8ae53bbcc326425c58de38b19a288d117ae168e767bdc760853c055a4d2479a2"
   solver-name = "gps-cdcl"
   solver-version = 1
